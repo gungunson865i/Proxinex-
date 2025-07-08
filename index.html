@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proxinex</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+    .navbar {
+      background-color: #f6be00;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navbar .left, .navbar .right {
+      display: flex;
+      align-items: center;
+    }
+    .navbar .title {
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .navbar .bell {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .page {
+      display: none;
+      padding: 20px;
+    }
+    .active {
+      display: block;
+    }
+    .home-title, .home-button, .video-button {
+      background-color: white;
+      padding: 20px;
+      margin: 10px 0;
+      text-align: center;
+      border-radius: 10px;
+      color: #f6be00;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+    }
+    .footer div {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="left">
+      <div class="title">PROXINEX</div>
+    </div>
+    <div class="right">
+      <div class="bell" onclick="navigateTo('notifications')">🔔</div>
+    </div>
+  </div>  <div id="home" class="page active">
+    <div class="home-title">WELCOME TO PROXINEX</div>
+    <div class="home-button" onclick="navigateTo('videos')">My Course</div>
+  </div>  <div id="videos" class="page">
+    <button onclick="navigateTo('home')">← Back</button>
+    <div class="video-button" onclick="window.open('https://youtu.be/dGdF_4f3PeU?si=5cYmhgjSguY1Bn2Y')">Video 1</div>
+    <div class="video-button" onclick="window.open('https://youtu.be/5YJYI7gY2Hc?si=T3peS7TqKEADV_95')">Video 2</div>
+    <div class="video-button" onclick="window.open('https://youtu.be/GXuRc1Aw58w?si=nU7Y3IxO1hYm1mH6')">Video 3</div>
+    <div class="video-button" onclick="window.open('https://youtu.be/38sCWZVzadE?si=BWfQCHmC_23-nY4h')">Video 4</div>
+    <div class="video-button" onclick="window.open('https://youtu.be/guSRnG7fg-w?si=OrSA_yaz3igldbFn')">Video 5</div>
+  </div>  <div id="notifications" class="page">
+    <button onclick="navigateTo('home')">← Back</button>
+    <h2>Notifications</h2>
+    <p>No new notifications.</p>
+  </div>  <div id="profile" class="page">
+    <h2 id="profileName">User Name</h2>
+    <div class="home-button">Basic Information</div>
+    <div class="home-button">Personal Details</div>
+    <div class="home-button">Address</div>
+    <div class="home-button">Educational Details</div>
+    <button class="home-button" onclick="navigateTo('login'); showFooter(false);">Logout</button>
+  </div>  <div id="chats" class="page">
+    <div class="home-button" onclick="navigateTo('chatWindow')">Chat with Mentor</div>
+  </div>  <div id="chatWindow" class="page">
+    <div id="chatMessages" style="min-height:200px;background:#eee;padding:10px;margin-bottom:50px;border-radius:10px;"></div>
+    <div style="position:fixed;bottom:50px;width:100%;display:flex;">
+      <input id="chatInput" placeholder="Type a message..." style="flex:1;padding:10px;" />
+      <button onclick="sendMessage()" style="padding:10px;background:#f6be00;color:white;border:none;">Send</button>
+    </div>
+  </div>  <div id="login" class="page">
+    <h2>Proxinex</h2>
+    <input type="text" id="loginUser" placeholder="Mobile Number" class="home-button" />
+    <input type="password" id="loginPass" placeholder="Password" class="home-button" />
+    <button class="home-button" onclick="loginUser()">Login</button>
+    <button class="home-button" onclick="navigateTo('register'); showFooter(false);">Register</button>
+  </div>  <div id="register" class="page">
+    <button onclick="navigateTo('login')">← Back</button>
+    <h2>Enter Mobile Number</h2>
+    <input type="text" id="regMobile" placeholder="Mobile Number" class="home-button" />
+    <button class="home-button" onclick="sendOTP()">Next</button>
+  </div>  <div id="otp" class="page">
+    <h2>Enter OTP sent to your mobile</h2>
+    <input type="text" id="otpCode" placeholder="Enter OTP" class="home-button" />
+    <button class="home-button" onclick="navigateTo('setPassword')">Next</button>
+  </div>  <div id="setPassword" class="page">
+    <h2>Set Your Password</h2>
+    <input type="password" id="setPass" placeholder="New Password" class="home-button" />
+    <button class="home-button" onclick="navigateTo('setName')">Next</button>
+  </div>  <div id="setName" class="page">
+    <h2>Enter Your Name</h2>
+    <input type="text" id="setNameInput" placeholder="Your Name" class="home-button" />
+    <button class="home-button" onclick="finishRegistration()">Next</button>
+  </div>  <div class="footer" id="footer">
+    <div onclick="navigateTo('home')">Home</div>
+    <div onclick="navigateTo('chats')">Chat</div>
+    <div onclick="navigateTo('profile')">Profile</div>
+  </div>  <script>
+    let users = {};
+    let currentOTP = '';
+    let currentMobile = '';
+
+    function navigateTo(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(page).classList.add('active');
+    }
+
+    function showFooter(show) {
+      document.getElementById('footer').style.display = show ? 'flex' : 'none';
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value;
+      if (message.trim()) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message';
+        msgDiv.style.textAlign = 'right';
+        msgDiv.style.background = '#fff';
+        msgDiv.style.margin = '5px';
+        msgDiv.style.padding = '10px';
+        msgDiv.style.borderRadius = '10px';
+        msgDiv.textContent = message;
+        document.getElementById('chatMessages').appendChild(msgDiv);
+        input.value = '';
+      }
+    }
+
+    function sendOTP() {
+      const mobile = document.getElementById('regMobile').value;
+      if (users[mobile]) {
+        alert("This number already exists");
+      } else {
+        currentOTP = Math.floor(1000 + Math.random() * 9000).toString();
+        alert("OTP Sent (simulated): " + currentOTP);
+        currentMobile = mobile;
+        navigateTo('otp');
+      }
+    }
+
+    function loginUser() {
+      const mobile = document.getElementById('loginUser').value;
+      const pass = document.getElementById('loginPass').value;
+      if (users[mobile] && users[mobile].password === pass) {
+        alert("Login successful");
+        document.getElementById('profileName').textContent = users[mobile].name;
+        navigateTo('home');
+        showFooter(true);
+      } else {
+        alert("Invalid credentials");
+      }
+    }
+
+    function finishRegistration() {
+      const name = document.getElementById('setNameInput').value;
+      const password = document.getElementById('setPass').value;
+      users[currentMobile] = { name, password };
+      alert("Registration complete");
+      document.getElementById('profileName').textContent = name;
+      navigateTo('profile');
+      showFooter(true);
+    }
+
+    navigateTo('login');
+    showFooter(false);
+  </script></body>
+</html>
